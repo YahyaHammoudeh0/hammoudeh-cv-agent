@@ -1,0 +1,7 @@
+# Arabic OCR for Jordanian Law Project — OCR Developer (Jul 2025 to Aug 2025)
+
+I built an Arabic OCR system for the Jordanian Law Project, achieving 99.3% accuracy on the production test set. The project digitizes Jordanian legal documents — a mix of clean printed statutes and older handwritten or scanned material — into searchable structured text.
+
+The pipeline is multi-stage and modular. First, DocLayout-YOLO performs document layout detection, segmenting each page into regions (headers, paragraphs, tables, marginalia). Each region is then classified as printed or handwritten, which routes it to the right recognizer: Qwen3-VL-8B handles printed Arabic, and the smaller Qwen3-VL-4B handles handwriting. Qwen3-VL was the right choice because it benchmarks at the top for Arabic on document VQA tasks and handles right-to-left text flow and diacritics natively. After recognition, a post-processing layer applies Arabic-specific dictionary correction, pattern-based rules, and diacritic restoration, with Gemini 2.5 Flash Lite as a final LLM fallback for the 1–5% of text that the vision models stumble on.
+
+The cost story matters. End-to-end the system runs at $0.00015 to $0.00023 per page, roughly 10x cheaper than Google Cloud Vision while being more accurate on Arabic specifically. The cost win comes from running Qwen3-VL via OpenRouter for the bulk of pages and only falling back to Gemini for ambiguous regions. The pipeline supports ONNX quantization and serverless GPU deployment for batch jobs, and it ships with a FastAPI service for online OCR.

@@ -1,0 +1,7 @@
+# Thesis — AI Coding Assessment Tool with University of Passau (Sep 2024 to Present)
+
+My undergraduate thesis is a research collaboration with the University of Passau, Germany. I'm building an AI-powered coding assessment platform — the kind of system a CS instructor would use to give students adaptive practice and meaningful feedback at scale, rather than the static problem sets most courses ship with.
+
+The stack is Next.js for the student-facing app and Nest.js for the backend, with multi-model evaluation routed through OpenRouter so the system can compare answers across DeepSeek, Qwen, Gemini, and GPT models. Evaluating code with multiple judges and aggregating their verdicts is more robust than trusting any single model, and it lets me study how model agreement correlates with answer correctness.
+
+The pedagogy layer is where the research lives. Students have an ELO rating per concept, and concepts are connected by a dependency graph — solving advanced problems lifts your rating in the prerequisites too. A progressive hint system gives students escalating help on stuck problems instead of jumping straight to the solution. A question generator produces personalized problems targeted at each student's weakest concepts, and an AI chat with persistent sessions lets students ask follow-up questions. Teachers get an analytics dashboard that surfaces struggling students and weak concepts at the class level. The internal codename is CodeAssess / SmartGamify.
