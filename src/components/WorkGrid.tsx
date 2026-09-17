@@ -14,10 +14,12 @@ const SIZE_CLASS: Record<Project["size"], string> = {
 
 function Card({ p }: { p: Project }) {
   const accentClass = p.accent ? ACCENTS[p.accent] : "group-hover:border-sand";
+  const href = p.live ?? p.github ?? "#";
+  const linkLabel = p.live ? "Live" : "Repo";
 
   return (
     <a
-      href={p.github}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={`group relative flex min-h-[210px] flex-col justify-between gap-5 rounded-2xl border border-line bg-bg-2/35 p-5 transition-all duration-300 hover:bg-bg-2/55 ${accentClass} ${SIZE_CLASS[p.size]}`}
@@ -29,7 +31,7 @@ function Card({ p }: { p: Project }) {
         <div
           aria-hidden
           className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-ink-mute transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:border-sand group-hover:text-sand"
-          title="GitHub"
+          title={linkLabel}
         >
           <svg viewBox="0 0 16 16" className="h-4 w-4 fill-current">
             <path d="M5 1l8 0 0 8-2 0 0-4.5L4.5 12 3 10.5 9.5 4l-4.5 0z" />
@@ -53,7 +55,7 @@ function Card({ p }: { p: Project }) {
           ))}
         </div>
         <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-sand opacity-80">
-          Repo
+          {linkLabel}
         </span>
       </div>
     </a>

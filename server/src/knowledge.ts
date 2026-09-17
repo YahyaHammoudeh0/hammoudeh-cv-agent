@@ -94,32 +94,41 @@ export function loadCorpus(): KnowledgeChunk[] {
  */
 export function retrieve(query: string, k = 5): KnowledgeChunk[] {
   const corpus = loadCorpus();
+  // The about file is the canonical baseline: always include it so generic
+  // questions ("what are you working on now?") still get current roles.
+  const about = corpus.filter((c) => c.source.startsWith("00_about"));
+  const aboutIds = new Set(about.map((c) => c.id));
+  const budget = Math.max(k - about.length, 0);
   const qTokens = new Set(tokenize(query));
-  if (qTokens.size === 0) return corpus.slice(0, k);
 
-  const scored = corpus.map((c) => {
-    let score = 0;
-    for (const t of qTokens) if (c.tokens.has(t)) score += 1;
-    // Filename boost
-    const sourceLower = c.source.toLowerCase();
-    for (const t of qTokens) if (sourceLower.includes(t)) score += 0.5;
-    return { chunk: c, score };
-  });
+  const scored = corpus
+    .filter((c) => !aboutIds.has(c.id))
+    .map((c) => {
+      let score = 0;
+      for (const t of qTokens) if (c.tokens.has(t)) score += 1;
+      // Filename boost
+      const sourceLower = c.source.toLowerCase();
+      for (const t of qTokens) if (sourceLower.includes(t)) score += 0.5;
+      return { chunk: c, score };
+    });
 
   scored.sort((a, b) => b.score - a.score);
-  // Always return at least 3 chunks (the about / contact baseline) even if no
+  // Return at least 3 chunks (the about / contact baseline) even if no
   // keyword overlap, so the model has *some* grounding.
-  const top = scored.filter((s) => s.score > 0).slice(0, k);
-  if (top.length < 3) {
-    const seen = new Set(top.map((s) => s.chunk.id));
+  const picked = scored
+    .filter((s) => s.score > 0)
+    .slice(0, budget)
+    .map((s) => s.chunk);
+  if (picked.length + about.length < 3) {
+    const seen = new Set([...about, ...picked].map((c) => c.id));
     for (const c of corpus) {
       if (!seen.has(c.id)) {
-        top.push({ chunk: c, score: 0 });
-        if (top.length >= 3) break;
+        picked.push(c);
+        if (picked.length + about.length >= 3) break;
       }
     }
   }
-  return top.map((s) => s.chunk);
+  return [...about, ...picked];
 }
 
 export function formatContext(chunks: KnowledgeChunk[]): string {

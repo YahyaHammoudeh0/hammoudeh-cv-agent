@@ -1,6 +1,6 @@
 const FACTS = [
-  { label: "AUC CS senior", value: "2026", detail: "Expected graduation" },
-  { label: "AUC GPA", value: "3.42", detail: "Computer Science" },
+  { label: "AUC CS graduate", value: "2026", detail: "B.Sc. Computer Science" },
+  { label: "AUC GPA", value: "3.3", detail: "Computer Science" },
   { label: "IELTS", value: "8.0", detail: "Advanced English" },
   { label: "Scholarship", value: "MEPI", detail: "Full U.S. Department of State scholarship" },
 ];
@@ -9,8 +9,8 @@ const EDUCATION = [
   {
     school: "The American University in Cairo",
     title: "Bachelor of Science in Computer Science",
-    date: "2022 to 2026 expected",
-    body: "Senior CS student on the Tomorrow's Leaders full scholarship. Coursework includes data structures, algorithms, operating systems, databases, machine learning, computer networks, and software engineering.",
+    date: "2022 to 2026",
+    body: "Computer Science graduate on the Tomorrow's Leaders full scholarship. Coursework included data structures, algorithms, operating systems, databases, machine learning, computer networks, and software engineering.",
   },
   {
     school: "College of Charleston",
@@ -20,49 +20,99 @@ const EDUCATION = [
   },
 ];
 
-const EXPERIENCE = [
+interface ExperienceImage {
+  src: string;
+  href?: string;
+  alt?: string;
+}
+
+interface ExperienceLink {
+  label: string;
+  href: string;
+}
+
+interface ExperienceItem {
+  title: string;
+  org: string;
+  date: string;
+  badge: string;
+  body: string;
+  stack: string[];
+  images?: ExperienceImage[];
+  links?: ExperienceLink[];
+}
+
+const EXPERIENCE: ExperienceItem[] = [
   {
-    title: "AI Engineer Intern",
-    org: "ZagTrader",
-    date: "Feb 2026 to present",
+    title: "AI Engineer",
+    org: "EY — Assurance AI Hub",
+    date: "Aug 2026 to present",
     badge: "Current",
-    body: "Building a unified AI platform with RAG retrieval, realtime voice, API gateway work, and admin tooling. Retrieval covers internal documents, Jira, portal data, and media transcripts.",
-    stack: ["React", "Express", "WebSocket", "MongoDB", "OpenAI Realtime", "OpenRouter"],
-    image: "/cv-shots/zagtrader.png",
+    body: "Building GenAI proofs of concept for client teams, then transitioning them into full products.",
+    stack: ["GenAI", "Python", "Client delivery"],
   },
   {
-    title: "AI Engineer Intern",
+    title: "AI Engineer",
     org: "Loving Loyalty",
     date: "Mar 2026 to present",
     badge: "Current",
-    body: "Building AI forecasting systems for POS predictive intelligence and business insights.",
+    body: "Building predictive intelligence for POS data — demand forecasting and business-insight models — and leading a four-engineer team through a POS codebase refactor.",
     stack: ["Forecasting", "POS analytics", "Python"],
+  },
+  {
+    title: "Freelance Full-Stack & AI Engineer",
+    org: "CSTC and Almafkhara Academy — KSA",
+    date: "May 2026 to present",
+    badge: "Freelance",
+    body: "One white-label, multi-tenant platform serving two Saudi training centers: Arabic-first CRM/LMS, finance and accounting, HR and trainer payouts, reporting, certificates, and a WhatsApp AI assistant with voice-note transcription and human handoff.",
+    stack: ["Next.js", "Supabase", "Multi-tenant", "WhatsApp AI", "Arabic RTL"],
+    images: [
+      { src: "/cv-shots/cstc.png", href: "https://cstc.edu.sa", alt: "CSTC homepage" },
+      {
+        src: "/cv-shots/almafkhara.png",
+        href: "https://almafkhara.com.sa",
+        alt: "Almafkhara Academy homepage",
+      },
+    ],
+    links: [
+      { label: "cstc.edu.sa", href: "https://cstc.edu.sa" },
+      { label: "almafkhara.com.sa", href: "https://almafkhara.com.sa" },
+    ],
+  },
+  {
+    title: "AI Engineer Intern",
+    org: "ZagTrader",
+    date: "Feb 2026 to Apr 2026",
+    badge: "Internship",
+    body: "Built a unified AI platform with RAG retrieval, realtime voice, API gateway work, and admin tooling. Retrieval covered internal documents, Jira, portal data, and media transcripts.",
+    stack: ["React", "Express", "WebSocket", "MongoDB", "OpenAI Realtime", "OpenRouter"],
+    images: [{ src: "/cv-shots/zagtrader.png", alt: "ZagTrader platform" }],
   },
   {
     title: "1st Place",
     org: "Deloitte Innovation Hub Hackathon",
     date: "Feb 2026",
     badge: "Winner",
-    body: "Built FlowCast, an inventory forecasting system combining XGBoost, LSTM, and DeepSeek orchestration. Source CV states 28% cost reduction and over $1M projected savings.",
+    body: "Built FlowCast, an inventory forecasting system combining XGBoost, LSTM, and DeepSeek orchestration. 28% cost reduction and over $1M in projected savings.",
     stack: ["XGBoost", "LSTM", "DeepSeek", "Python"],
   },
   {
     title: "Thesis",
     org: "AI Coding Assessment Platform",
-    date: "Sep 2024 to present",
+    date: "Sep 2024 to Jun 2026",
     badge: "Research",
     body: "Thesis with University of Passau: adaptive coding assessment with ELO ratings, concept dependency graphs, AI chat, and teacher analytics.",
     stack: ["Next.js", "Nest.js", "DeepSeek", "Qwen", "Gemini", "OpenRouter"],
-    image: "/cv-shots/thesis.png",
+    images: [{ src: "/cv-shots/thesis.png", alt: "Madar assessment platform" }],
   },
   {
     title: "Founder",
     org: "Seiq Marketplace",
-    date: "Jan 2025 to present",
+    date: "Jan 2025 to May 2026",
     badge: "Product",
     body: "Multi-vendor Jordanian marketplace with web and mobile apps, Supabase backend, PayPal, Careem Express localization, and AI-assisted listing flows.",
     stack: ["Next.js", "Supabase", "ShadCN", "Capacitor", "PayPal"],
-    image: "/cv-shots/seiq.png",
+    images: [{ src: "/cv-shots/seiq.png", alt: "Seiq marketplace" }],
   },
   {
     title: "PR Director and Developer",
@@ -77,7 +127,7 @@ const EXPERIENCE = [
     org: "Jordanian Law Project",
     date: "Jul 2025 to Aug 2025",
     badge: "AI",
-    body: "Arabic OCR pipeline with Qwen3-VL, DocLayout-YOLO, and Gemini 2.5 Flash Lite. Source CV states 99.3% accuracy and 10x lower cost than cloud alternatives.",
+    body: "Arabic OCR pipeline with Qwen3-VL, DocLayout-YOLO, and Gemini 2.5 Flash Lite. 99.3% accuracy at 10x lower cost than cloud alternatives.",
     stack: ["Qwen3-VL", "DocLayout-YOLO", "Gemini", "Python"],
   },
   {
@@ -153,7 +203,7 @@ const SKILLS = [
   ["Languages", "Rust", "C++", "C", "Python", "TypeScript", "C#", "SQL"],
   ["Frameworks", "React", "Next.js", "Nest.js", "Express", "Django", "tRPC", "PyTorch"],
   ["Infra and data", "Supabase", "PostgreSQL", "MongoDB", "Docker", "REST APIs"],
-  ["AI and ML", "RAG", "OCR", "DeepSeek", "Qwen", "Gemini", "OpenRouter", "BAML"],
+  ["AI and ML", "RAG", "GenAI", "Forecasting", "OCR", "DeepSeek", "Qwen", "Gemini", "OpenRouter", "BAML"],
   ["Languages spoken", "Arabic native", "English IELTS 8.0"],
 ];
 
@@ -269,7 +319,7 @@ export function CvSnapshot() {
                 <details
                   key={item.title + item.org}
                   className="group rounded-2xl border border-line bg-bg-2/35 transition hover:border-sand/70 hover:bg-bg-2/55"
-                  open={index < 2}
+                  open={index < 3}
                 >
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
                     <div className="min-w-0">
@@ -300,14 +350,63 @@ export function CvSnapshot() {
                         {item.body}
                       </p>
                       <Pills items={item.stack} />
+                      {item.links && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {item.links.map((link) => (
+                            <a
+                              key={link.href}
+                              href={link.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rounded-full border border-sand/40 bg-sand/[0.06] px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-sand transition hover:bg-sand hover:text-bg"
+                            >
+                              {link.label} ↗
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    {item.image && (
-                      <div className="overflow-hidden rounded-xl border border-line bg-bg">
-                        <img
-                          src={item.image}
-                          alt={`${item.org} screenshot`}
-                          className="h-full min-h-[126px] w-full object-cover opacity-85 transition group-hover:scale-[1.03] group-hover:opacity-100"
-                        />
+                    {item.images && (
+                      <div className="grid content-start gap-3">
+                        {item.images.map((image) => {
+                          const shot = (
+                            <>
+                              <img
+                                src={image.src}
+                                alt={image.alt ?? `${item.org} screenshot`}
+                                className="h-full min-h-[126px] w-full object-cover opacity-85 transition group-hover:scale-[1.03] group-hover:opacity-100"
+                              />
+                              {image.href && (
+                                <span
+                                  aria-hidden
+                                  className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full border border-line bg-bg/80 text-[12px] leading-none text-sand opacity-0 backdrop-blur transition group-hover/img:opacity-100"
+                                >
+                                  ↗
+                                </span>
+                              )}
+                            </>
+                          );
+
+                          return image.href ? (
+                            <a
+                              key={image.src}
+                              href={image.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              title={`Open ${image.href.replace("https://", "")}`}
+                              className="group/img relative block overflow-hidden rounded-xl border border-line bg-bg transition hover:border-sand/70"
+                            >
+                              {shot}
+                            </a>
+                          ) : (
+                            <div
+                              key={image.src}
+                              className="relative overflow-hidden rounded-xl border border-line bg-bg"
+                            >
+                              {shot}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

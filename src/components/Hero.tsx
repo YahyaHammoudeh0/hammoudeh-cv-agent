@@ -8,13 +8,24 @@ const CHIPS = [
   "Why hire you?",
   "Tell me about FlowCast and Deloitte",
   "What did you build at ZagTrader?",
+  "What are you doing at EY now?",
+  "Tell me about CSTC and Almafkhara",
   "Explain the Arabic OCR project",
-  "What is your thesis about?",
   "Which project proves backend depth?",
   "What makes you different from other juniors?",
 ];
 
 const CV_HOOKS = [
+  {
+    label: "EY AI Engineer",
+    detail: "client GenAI, POC to product",
+    question: "What are you doing now at EY?",
+  },
+  {
+    label: "CSTC + Almafkhara",
+    detail: "multi-tenant training platform",
+    question: "Tell me about CSTC and the Almafkhara platform",
+  },
   {
     label: "Deloitte winner",
     detail: "FlowCast inventory forecasting",
@@ -24,16 +35,6 @@ const CV_HOOKS = [
     label: "99.3% OCR",
     detail: "Arabic legal document pipeline",
     question: "Explain the Arabic OCR project and why it matters",
-  },
-  {
-    label: "ZagTrader",
-    detail: "brokerage RAG and voice agent",
-    question: "What did you build at ZagTrader?",
-  },
-  {
-    label: "Systems depth",
-    detail: "Rust process manager, 121 tests",
-    question: "Which project proves backend and systems depth?",
   },
 ];
 

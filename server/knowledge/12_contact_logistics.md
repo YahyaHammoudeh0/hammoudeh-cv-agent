@@ -7,9 +7,9 @@
 - LinkedIn and GitHub linked from his CV
 
 ## Availability
-- Going to Riyadh next week for job hunting.
-- Currently interning at ZagTrader (started Feb 2026).
-- Graduating from AUC in 2026.
+- Currently an AI Engineer at EY (since August 2026), alongside ongoing AI Engineer work at Loving Loyalty and freelance platform work for CSTC and Almafkhara.
+- Graduated from AUC in 2026; based in Amman, Jordan.
+- Open to conversations about ambitious AI engineering roles, collaborations, and interesting builds.
 
 ## What I do not negotiate over chat
 - Salary, equity, visa support, or relocation specifics — those go through email so the right paper trail exists.

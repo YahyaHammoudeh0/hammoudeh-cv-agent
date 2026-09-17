@@ -6,12 +6,33 @@ export interface Project {
   title: string;
   description: string;
   stack: string[];
-  github: string;
+  github?: string;
+  live?: string;
   size: "lg" | "md" | "sm";
   accent?: "sand" | "cool" | "ink";
 }
 
 export const PROJECTS: Project[] = [
+  {
+    id: "cstc",
+    title: "CSTC Training Platform",
+    description:
+      "White-label, multi-tenant platform for a Saudi training center: Arabic-first CRM/LMS, finance and accounting, HR, certificates, and a WhatsApp AI assistant with voice-note transcription. Live at cstc.edu.sa.",
+    stack: ["Next.js", "Supabase", "Multi-tenant", "WhatsApp AI"],
+    live: "https://cstc.edu.sa",
+    size: "lg",
+    accent: "sand",
+  },
+  {
+    id: "almafkhara",
+    title: "Almafkhara Academy",
+    description:
+      "Second tenant on the same platform: independent Supabase project, deep-teal bilingual brand, and a bespoke editorial landing composed inside the shared tenant system. Live at almafkhara.com.sa.",
+    stack: ["Next.js", "Supabase", "Arabic RTL", "i18n"],
+    live: "https://almafkhara.com.sa",
+    size: "lg",
+    accent: "cool",
+  },
   {
     id: "deloitte",
     title: "FlowCast — Deloitte Hackathon Winner",
@@ -19,7 +40,7 @@ export const PROJECTS: Project[] = [
       "Inventory forecasting that beat the field at AUC's Deloitte Innovation Hub. XGBoost + LSTM ensemble with DeepSeek V3.2 routing the right model per SKU. ~28% cost reduction, $1M+ projected client savings.",
     stack: ["XGBoost", "LSTM", "DeepSeek", "Python"],
     github: "https://github.com/yahyahammoudeh/flowcast",
-    size: "lg",
+    size: "md",
     accent: "sand",
   },
   {

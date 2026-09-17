@@ -1,6 +1,6 @@
-# ZagTrader — AI Engineer Intern (Feb 2026 to Present)
+# ZagTrader — AI Engineer Intern (Feb 2026 to Apr 2026)
 
-I'm an AI Engineer Intern at ZagTrader, a brokerage technology company. I started in February 2026. My mandate is to build a unified AI platform on top of ZagTrader's brokerage systems — the platform combines a RAG retrieval pipeline, a real-time voice agent, an API gateway, and an admin dashboard.
+I was an AI Engineer Intern at ZagTrader, a brokerage technology company, from February to April 2026. My mandate was to build a unified AI platform on top of ZagTrader's brokerage systems — the platform combines a RAG retrieval pipeline, a real-time voice agent, an API gateway, and an admin dashboard.
 
 The retrieval system is the centerpiece. It is a multi-source pipeline that spans internal documents, the web portal, Jira tickets, the knowledge base, and media transcripts. Five retrieval pipelines run in parallel: Folder, Portal, Knowledge, Jira, and Media. The portal source is interesting because the original brokerage application is not document-shaped — there's no clean text dump to index. To index it, I used Playwright to crawl the live web portal and capture screenshots, then a vision-language model extracts structured content from those screens. An LLM-powered router decides which pipelines to query for a given user question, and results are merged and reranked before generation.
 
