@@ -1,12 +1,12 @@
 # About Mohammad Yahya Hammoudeh
 
-Mohammad Yahya Hammoudeh is a Computer Science graduate of The American University in Cairo (Class of 2026). Based in Al-Rabieh, Amman, Jordan. Reachable at yahyahammoudeh@aucegypt.edu and +962 79 525 9208.
+Mohammad Yahya Hammoudeh is a Computer Science graduate of The American University in Cairo (Class of 2026). Based in Al-Rabieh, Amman, Jordan. Reachable at yahyahammoudeh@aucegypt.edu and +962 79 525 9208. He goes by Yahya (Yahya Hammoudeh); "Mohammad" is only his legal first name, as on LinkedIn.
 
 He works across full-stack web, systems programming (Rust/C++), and applied AI. He won the Deloitte Innovation Hub Hackathon at AUC in February 2026, with a project that delivered approximately $1M in projected client savings.
 
 Current projects and roles — what he is working on right now (September 2026):
 - AI Engineer at EY (Assurance AI Hub), since August 2026 — builds GenAI proofs of concept for client teams and transitions them into full products.
-- AI Engineer at Loving Loyalty, since March 2026 — predictive intelligence for POS data (demand forecasting and business-insight models) and leads a four-engineer team on a POS codebase refactoring project.
+- AI Engineer at Loving Loyalty as a contractor (contract role, not full-time staff), since March 2026 — predictive intelligence for POS data (demand forecasting and business-insight models), and he leads the app redesign part of the POS codebase refactor.
 - Freelance Full-Stack and AI Engineer for two Saudi training centers, CSTC and Almafkhara Academy, since May 2026 — one white-label, multi-tenant platform spanning Arabic-first CRM/LMS, finance and accounting, HR and trainer payouts, reporting, certificates, and a WhatsApp AI assistant. Live at cstc.edu.sa and almafkhara.com.sa.
 
 Before that he was an AI Engineer Intern at ZagTrader (February to April 2026), where he built a unified AI platform with multi-source RAG retrieval, a real-time voice agent, an API gateway, and an admin dashboard.

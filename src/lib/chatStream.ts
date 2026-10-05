@@ -9,18 +9,41 @@ export interface ChatStreamHandlers {
   onError: (message: string) => void;
 }
 
-export async function streamChat(
+export interface HistoryTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export function streamChat(
   message: string,
+  history: HistoryTurn[],
   handlers: ChatStreamHandlers,
   signal?: AbortSignal,
 ): Promise<void> {
-  const endpoint = getChatEndpoint();
+  return streamSSE(getChatEndpoint(), { message, history }, handlers, signal);
+}
+
+/** Recruiter mode: stream a fit analysis for a pasted job description. */
+export function streamMatch(
+  jd: string,
+  handlers: ChatStreamHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
+  return streamSSE(getChatEndpoint().replace(/\/chat$/, "/match"), { jd }, handlers, signal);
+}
+
+async function streamSSE(
+  endpoint: string,
+  body: Record<string, unknown>,
+  handlers: ChatStreamHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
   let res: Response;
   try {
     res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify(body),
       signal,
     });
   } catch (e) {
@@ -30,12 +53,7 @@ export async function streamChat(
   }
 
   if (!res.ok) {
-    const message = await getErrorMessage(res, endpoint);
-    if (res.status === 429) {
-      handlers.onError(message);
-    } else {
-      handlers.onError(message);
-    }
+    handlers.onError(await getErrorMessage(res, endpoint));
     return;
   }
 

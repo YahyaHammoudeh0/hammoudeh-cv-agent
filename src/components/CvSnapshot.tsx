@@ -1,9 +1,6 @@
-const FACTS = [
-  { label: "AUC CS graduate", value: "2026", detail: "B.Sc. Computer Science" },
-  { label: "AUC GPA", value: "3.3", detail: "Computer Science" },
-  { label: "IELTS", value: "8.0", detail: "Advanced English" },
-  { label: "Scholarship", value: "MEPI", detail: "Full U.S. Department of State scholarship" },
-];
+import { useChat } from "../chat/chatContext";
+import { ArrowUpRight, MessageCircle, Plus, Trophy } from "lucide-react";
+import { Card, SectionHeader, Tag } from "./ui";
 
 const EDUCATION = [
   {
@@ -52,12 +49,12 @@ const EXPERIENCE: ExperienceItem[] = [
     stack: ["GenAI", "Python", "Client delivery"],
   },
   {
-    title: "AI Engineer",
+    title: "AI Engineer (Contractor)",
     org: "Loving Loyalty",
     date: "Mar 2026 to present",
-    badge: "Current",
-    body: "Building predictive intelligence for POS data — demand forecasting and business-insight models — and leading a four-engineer team through a POS codebase refactor.",
-    stack: ["Forecasting", "POS analytics", "Python"],
+    badge: "Contract",
+    body: "Contract role building predictive intelligence for POS data (demand forecasting and business-insight models), and leading the app redesign within the POS codebase refactor.",
+    stack: ["Forecasting", "POS analytics", "App redesign", "Python"],
   },
   {
     title: "Freelance Full-Stack & AI Engineer",
@@ -87,6 +84,14 @@ const EXPERIENCE: ExperienceItem[] = [
     body: "Built a unified AI platform with RAG retrieval, realtime voice, API gateway work, and admin tooling. Retrieval covered internal documents, Jira, portal data, and media transcripts.",
     stack: ["React", "Express", "WebSocket", "MongoDB", "OpenAI Realtime", "OpenRouter"],
     images: [{ src: "/cv-shots/zagtrader.png", alt: "ZagTrader platform" }],
+  },
+  {
+    title: "Winner",
+    org: "IMA Student Case Competition — Middle East & Africa",
+    date: "Feb 2026 to May 2026",
+    badge: "Winner",
+    body: "Winning team at the Middle East & Africa finals in Riyadh. The case: should West Valley Fresh enter the organic Hass avocado market, and which five US cities should it target? We ran CVP, price-elasticity and sensitivity analysis on 10+ years of Hass Avocado Board data (43,840 weekly records, 40 cities) and recommended entry with a top-five ranking that held under ±50% shipping-cost scenarios. Awarded a CMA certification scholarship.",
+    stack: ["CVP analysis", "Price elasticity", "Sensitivity analysis", "Python"],
   },
   {
     title: "1st Place",
@@ -164,17 +169,15 @@ const EXPERIENCE: ExperienceItem[] = [
   },
 ];
 
-const PROJECTS = [
+const PROJECTS: { name: string; metric?: string; body: string; stack: string[]; image?: string }[] = [
   {
     name: "Linux Process Manager",
-    metric: "121 tests",
     body: "Rust process manager with TUI, REST API, React web UI, GPU monitoring, container awareness, and anomaly detection.",
     stack: ["Rust", "React", "SQLite", "Tokio", "Docker", "Prometheus"],
     image: "/cv-shots/process-manager.png",
   },
   {
     name: "Restaurant POS",
-    metric: "324 tests",
     body: "Restaurant POS with Kitchen Display, table management, inventory, loyalty, PWA offline support, and Arabic/English UI.",
     stack: ["Next.js 15", "React 19", "tRPC", "Supabase", "PWA"],
     image: "/cv-shots/pos.png",
@@ -207,278 +210,161 @@ const SKILLS = [
   ["Languages spoken", "Arabic native", "English IELTS 8.0"],
 ];
 
+function AskButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="btn-ledge inline-flex items-center gap-1.5 rounded-xl bg-sand px-3.5 py-2 text-[14px] font-bold text-pop"
+    >
+      <MessageCircle className="h-4 w-4" /> Ask about this
+    </button>
+  );
+}
+
 function Pills({ items }: { items: string[] }) {
   return (
     <div className="mt-4 flex flex-wrap gap-1.5">
       {items.map((item) => (
-        <span
-          key={item}
-          className="rounded-md border border-line/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-ink-mute"
-        >
-          {item}
-        </span>
+        <Tag key={item}>{item}</Tag>
       ))}
     </div>
   );
 }
 
 export function CvSnapshot() {
+  const { ask } = useChat();
+  const askAbout = (q: string) => ask(q, { openDock: true, excited: true });
+
   return (
-    <section id="cv" className="relative border-y border-line bg-bg py-24">
-      <div className="mx-auto grid w-full max-w-[1180px] gap-14 px-6 lg:grid-cols-[0.78fr_1.22fr] lg:px-10">
-        <aside className="lg:sticky lg:top-28 lg:self-start">
-          <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-sand">
-            CV Snapshot
-          </div>
-          <h2 className="mt-4 font-display text-[44px] leading-[0.96] tracking-tight text-ink sm:text-[58px]">
-            The factual scan.
-          </h2>
-          <p className="mt-5 max-w-[470px] text-[15px] leading-7 text-ink-mute">
-            Condensed from the older CV page and the site knowledge files. No
-            filler stats, just education, experience, projects, skills, and
-            concrete proof.
-          </p>
-
-          <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-6">
-            {FACTS.map((item) => (
-              <div key={item.label} className="border-t border-line pt-4">
-                <div className="font-display text-[30px] leading-none text-ink">
-                  {item.value}
-                </div>
-                <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-sand">
-                  {item.label}
-                </div>
-                <p className="mt-2 text-[11px] leading-4 text-ink-mute">
-                  {item.detail}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-9 flex flex-wrap gap-2">
-            <a
-              href="mailto:yahyahammoudeh@aucegypt.edu"
-              className="rounded-full border border-sand bg-sand px-4 py-2 text-[12px] font-semibold text-bg transition hover:bg-sand-bright"
-            >
-              Email Mohammad
-            </a>
-            <a
-              href="https://github.com/YahyaHammoudeh0"
-              className="rounded-full border border-line px-4 py-2 text-[12px] font-semibold text-ink-mute transition hover:border-sand hover:text-ink"
-              target="_blank"
-              rel="noreferrer"
-            >
-              GitHub
-            </a>
-          </div>
-        </aside>
-
-        <div className="space-y-14">
-          <div>
-            <div className="mb-5 flex items-end justify-between gap-4 border-b border-line pb-3">
-              <h3 className="font-display text-[28px] leading-none text-ink">
-                Education
-              </h3>
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faint">
-                verified facts
-              </span>
-            </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              {EDUCATION.map((item) => (
-                <article
-                  key={item.school}
-                  className="rounded-2xl border border-line bg-bg-2/35 p-5"
-                >
-                  <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-sand">
-                    {item.date}
-                  </div>
-                  <h4 className="mt-3 text-[16px] font-semibold leading-tight text-ink">
-                    {item.title}
-                  </h4>
-                  <p className="mt-1 text-[13px] text-ink-mute">{item.school}</p>
-                  <p className="mt-4 text-[14px] leading-6 text-ink-mute">
-                    {item.body}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-5 flex items-end justify-between gap-4 border-b border-line pb-3">
-              <h3 className="font-display text-[28px] leading-none text-ink">
-                Experience
-              </h3>
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faint">
-                full compact timeline
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {EXPERIENCE.map((item, index) => (
-                <details
-                  key={item.title + item.org}
-                  className="group rounded-2xl border border-line bg-bg-2/35 transition hover:border-sand/70 hover:bg-bg-2/55"
-                  open={index < 3}
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+    <section id="cv" className="relative bg-bg py-24 lg:py-32">
+      <div className="mx-auto w-full max-w-[1180px] space-y-24 px-5 sm:px-8 lg:px-10">
+        <div>
+          <SectionHeader
+            num="01"
+            title="Work"
+            sub="Roles, wins and what I actually built. Open a row for the detail, or ask the avatar for the long version."
+          />
+          <div className="mt-10 space-y-3">
+            {EXPERIENCE.map((item, index) => (
+              <details key={item.title + item.org} className="reveal group" open={index < 2}>
+                <summary className="list-none">
+                  <Card interactive className="flex cursor-pointer items-start justify-between gap-4 px-5 py-4 group-open:rounded-b-none group-open:border-b-0 sm:items-center">
                     <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h4 className="text-[16px] font-semibold leading-tight text-ink">
-                          {item.title}
-                        </h4>
-                        <span className="rounded-full border border-sand/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-sand">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-[13px] text-ink-mute">
-                        {item.org}
+                      <h3 className="font-display text-[19px] font-bold leading-tight text-ink">{item.title}</h3>
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 text-[15px] text-ink-mute">
+                        <span>{item.org}</span>
+                        <span aria-hidden className="text-line">|</span>
+                        <span className="font-semibold text-sand">{item.date}</span>
                       </p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <span className="hidden rounded-full border border-line px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-faint sm:inline">
-                        {item.date}
-                      </span>
-                      <span className="grid h-8 w-8 place-items-center rounded-full border border-line text-lg leading-none text-sand transition group-open:rotate-45">
-                        +
+                    <div className="flex items-center gap-3">
+                      <Tag tone={item.badge === "Winner" ? "lime" : item.badge === "Current" || item.badge === "Contract" ? "palm" : "plain"}>
+                        {item.badge === "Winner" && <Trophy className="h-3.5 w-3.5" />}
+                        {item.badge}
+                      </Tag>
+                      <span className="grid h-8 w-8 place-items-center rounded-lg border-[1.5px] border-line text-ink-mute transition-colors group-hover:border-sand group-hover:text-sand">
+                        <Plus className="h-4 w-4 transition-transform group-open:rotate-45" />
                       </span>
                     </div>
-                  </summary>
-                  <div className="grid gap-5 px-5 pb-5 md:grid-cols-[1fr_220px]">
-                    <div>
-                      <p className="text-[14px] leading-6 text-ink-mute">
-                        {item.body}
-                      </p>
-                      <Pills items={item.stack} />
-                      {item.links && (
-                        <div className="mt-3 flex flex-wrap gap-1.5">
-                          {item.links.map((link) => (
-                            <a
-                              key={link.href}
-                              href={link.href}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="rounded-full border border-sand/40 bg-sand/[0.06] px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-sand transition hover:bg-sand hover:text-bg"
-                            >
-                              {link.label} ↗
-                            </a>
-                          ))}
-                        </div>
-                      )}
+                  </Card>
+                </summary>
+                <div className="grid gap-5 rounded-b-2xl border-[1.5px] border-t-0 border-line bg-bg-2 px-5 pb-5 pt-1 md:grid-cols-[1fr_260px]">
+                  <div>
+                    <p className="max-w-[760px] text-[16px] leading-relaxed text-ink-mute">{item.body}</p>
+                    <Pills items={item.stack} />
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <AskButton onClick={() => askAbout(`Tell me about your ${item.title} role at ${item.org}: what you built, the stack, and the hardest problem.`)} />
+                      {item.links?.map((link) => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 rounded-xl border-[1.5px] border-line px-3 py-1.5 text-[14px] font-semibold text-ink transition hover:border-sand hover:text-sand"
+                        >
+                          {link.label} <ArrowUpRight className="h-3.5 w-3.5" />
+                        </a>
+                      ))}
                     </div>
-                    {item.images && (
-                      <div className="grid content-start gap-3">
-                        {item.images.map((image) => {
-                          const shot = (
-                            <>
-                              <img
-                                src={image.src}
-                                alt={image.alt ?? `${item.org} screenshot`}
-                                className="h-full min-h-[126px] w-full object-cover opacity-85 transition group-hover:scale-[1.03] group-hover:opacity-100"
-                              />
-                              {image.href && (
-                                <span
-                                  aria-hidden
-                                  className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full border border-line bg-bg/80 text-[12px] leading-none text-sand opacity-0 backdrop-blur transition group-hover/img:opacity-100"
-                                >
-                                  ↗
-                                </span>
-                              )}
-                            </>
-                          );
-
-                          return image.href ? (
-                            <a
-                              key={image.src}
-                              href={image.href}
-                              target="_blank"
-                              rel="noreferrer"
-                              title={`Open ${image.href.replace("https://", "")}`}
-                              className="group/img relative block overflow-hidden rounded-xl border border-line bg-bg transition hover:border-sand/70"
-                            >
-                              {shot}
-                            </a>
-                          ) : (
-                            <div
-                              key={image.src}
-                              className="relative overflow-hidden rounded-xl border border-line bg-bg"
-                            >
-                              {shot}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
                   </div>
-                </details>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-5 flex items-end justify-between gap-4 border-b border-line pb-3">
-              <h3 className="font-display text-[28px] leading-none text-ink">
-                Projects
-              </h3>
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faint">
-                selected proof
-              </span>
-            </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              {PROJECTS.map((item) => (
-                <article
-                  key={item.name}
-                  className="rounded-2xl border border-line bg-bg-2/35 p-5"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <h4 className="text-[16px] font-semibold leading-tight text-ink">
-                      {item.name}
-                    </h4>
-                    <span className="shrink-0 rounded-full border border-sand/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-sand">
-                      {item.metric}
-                    </span>
-                  </div>
-                  <p className="mt-4 text-[14px] leading-6 text-ink-mute">
-                    {item.body}
-                  </p>
-                  <Pills items={item.stack} />
-                  {item.image && (
-                    <div className="mt-5 overflow-hidden rounded-xl border border-line bg-bg">
-                      <img
-                        src={item.image}
-                        alt={`${item.name} screenshot`}
-                        className="h-[132px] w-full object-cover opacity-85"
-                      />
+                  {item.images && (
+                    <div className="grid content-start gap-3">
+                      {item.images.map((image) => {
+                        const img = <img src={image.src} alt={image.alt ?? `${item.org} screenshot`} className="h-full min-h-[130px] w-full object-cover" />;
+                        return image.href ? (
+                          <a
+                            key={image.src}
+                            href={image.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={`Open ${image.href.replace("https://", "")}`}
+                            className="block overflow-hidden rounded-xl border-[1.5px] border-line transition hover:border-sand"
+                          >
+                            {img}
+                          </a>
+                        ) : (
+                          <div key={image.src} className="overflow-hidden rounded-xl border-[1.5px] border-line">
+                            {img}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
-                </article>
-              ))}
-            </div>
+                </div>
+              </details>
+            ))}
           </div>
+        </div>
 
-          <div>
-            <h3 className="border-b border-line pb-3 font-display text-[28px] leading-none text-ink">
-              Skills
-            </h3>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {SKILLS.map(([group, ...items]) => (
-                <div key={group} className="border-t border-line pt-3">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-sand">
-                    {group}
+        <div>
+          <SectionHeader num="02" title="Projects" sub="Things I built outside the day job, each with a reason to exist." />
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
+            {PROJECTS.map((item) => (
+              <Card key={item.name} interactive className="reveal flex flex-col overflow-hidden">
+                {item.image && (
+                  <div className="border-b-[1.5px] border-line">
+                    <img src={item.image} alt={`${item.name} screenshot`} className="h-[180px] w-full object-cover" />
                   </div>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {items.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-md border border-line/80 px-2 py-1 text-[12px] text-ink-mute"
-                      >
-                        {item}
-                      </span>
-                    ))}
+                )}
+                <div className="flex flex-1 flex-col p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="font-display text-[20px] font-bold leading-tight text-ink">{item.name}</h3>
+                    {item.metric && <Tag tone="palm">{item.metric}</Tag>}
+                  </div>
+                  <p className="mt-3 flex-1 text-[16px] leading-relaxed text-ink-mute">{item.body}</p>
+                  <Pills items={item.stack} />
+                  <div className="mt-4">
+                    <AskButton onClick={() => askAbout(`Walk me through the ${item.name} project: why you built it, how it works, and what you'd do differently.`)} />
                   </div>
                 </div>
-              ))}
-            </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <SectionHeader num="03" title="Education & skills" />
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
+            {EDUCATION.map((item) => (
+              <Card key={item.school} className="p-5">
+                <span className="text-[14px] font-semibold text-sand">{item.date}</span>
+                <h3 className="mt-2 font-display text-[19px] font-bold leading-tight text-ink">{item.title}</h3>
+                <p className="mt-0.5 text-[15px] text-ink-mute">{item.school}</p>
+                <p className="mt-3 text-[16px] leading-relaxed text-ink-mute">{item.body}</p>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {SKILLS.map(([group, ...items]) => (
+              <Card key={group} className="p-5">
+                <h3 className="text-[15px] font-bold text-ink">{group}</h3>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {items.map((it) => (
+                    <Tag key={it}>{it}</Tag>
+                  ))}
+                </div>
+              </Card>
+            ))}
           </div>
         </div>
       </div>

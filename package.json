@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently -n vite,chat -c blue,magenta \"npm run dev:web\" \"npm run dev:chat\"",
     "dev:web": "vite",
-    "dev:chat": "tsx watch server/src/index.ts",
+    "dev:chat": "CHAT_PORT=8787 tsx watch server/src/index.ts",
     "knowledge:index": "tsx server/src/index-projects.ts",
     "build": "tsc -b && vite build",
     "start": "NODE_ENV=production tsx server/src/index.ts",
@@ -22,6 +22,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
+    "lucide-react": "^1.52.0",
     "openai": "^4.104.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

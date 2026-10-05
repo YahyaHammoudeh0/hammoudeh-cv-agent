@@ -1,195 +1,245 @@
 import { useEffect, useRef, useState } from "react";
-import { Agent, type AgentState } from "./Agent";
+import { LazyAvatar as Avatar } from "./LazyAvatar";
 import { ChatBox } from "./ChatBox";
-import { streamChat } from "../lib/chatStream";
+import { JobMatch } from "./JobMatch";
+import { AnswerCard } from "../chat/AnswerCard";
+import { useChat } from "../chat/chatContext";
+import { ArrowUpRight, Target } from "lucide-react";
 
 const CHIPS = [
   "Give me the 30-second CV",
   "Why hire you?",
-  "Tell me about FlowCast and Deloitte",
-  "What did you build at ZagTrader?",
   "What are you doing at EY now?",
-  "Tell me about CSTC and Almafkhara",
-  "Explain the Arabic OCR project",
+  "What did you build at ZagTrader?",
+  "Tell me about FlowCast and Deloitte",
   "Which project proves backend depth?",
-  "What makes you different from other juniors?",
 ];
 
 const CV_HOOKS = [
-  {
-    label: "EY AI Engineer",
-    detail: "client GenAI, POC to product",
-    question: "What are you doing now at EY?",
-  },
-  {
-    label: "CSTC + Almafkhara",
-    detail: "multi-tenant training platform",
-    question: "Tell me about CSTC and the Almafkhara platform",
-  },
-  {
-    label: "Deloitte winner",
-    detail: "FlowCast inventory forecasting",
-    question: "Tell me about FlowCast and the Deloitte hackathon win",
-  },
-  {
-    label: "99.3% OCR",
-    detail: "Arabic legal document pipeline",
-    question: "Explain the Arabic OCR project and why it matters",
-  },
-];
+  { label: "EY", detail: "AI Engineer, GenAI POC to product", question: "What are you doing now at EY?" },
+  { label: "Loving Loyalty", detail: "Forecasting + leading the app redesign", question: "What do you do at Loving Loyalty, and what does the app redesign involve?" },
+  { label: "Deloitte 1st place", detail: "FlowCast inventory forecasting", question: "Tell me about FlowCast and the Deloitte hackathon win" },
+  { label: "IMA winner", detail: "MEA finals, Riyadh 2026", question: "Tell me about winning the IMA Student Case Competition" },
+]
+
+const GREETING = "Hey, I'm the 3D me. Ask me anything about my work, or poke me.";
+const POKE_LINES = ["Hey!", "Easy.", "I'm working here!", "Okay, okay.", "Personal space?", "Again?!"];
+const BOX_LINE = "Alright. Square up.";
+
+const stamp = () => performance.now();
+const pickOne = <T,>(items: T[]) => items[Math.floor(Math.random() * items.length)];
+
+interface Burst {
+  id: number;
+  text: string;
+  x: number;
+  y: number;
+}
 
 export function Hero() {
-  const [state, setState] = useState<AgentState>("idle");
-  const [response, setResponse] = useState("");
-  const [isStreaming, setIsStreaming] = useState(false);
-  const responseTimer = useRef<number | null>(null);
-  const idleTimer = useRef<number | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const { messages, streaming, avatarState, oneShot, play, ask, setTyping, setDockOpen } = useChat();
+  const [jobOpen, setJobOpen] = useState(false);
+  const [greeting, setGreeting] = useState("");
+  const [bursts, setBursts] = useState<Burst[]>([]);
+  const pokes = useRef<number[]>([]);
+  const lastPointer = useRef({ x: 0, y: 0 });
+  const stageRef = useRef<HTMLDivElement>(null);
 
-  const clearTimers = () => {
-    if (responseTimer.current) window.clearTimeout(responseTimer.current);
-    if (idleTimer.current) window.clearTimeout(idleTimer.current);
+  const answer = [...messages].reverse().find((m) => m.role === "assistant");
+  const answerIdx = answer ? messages.indexOf(answer) : -1;
+  const question = answerIdx > 0 ? messages[answerIdx - 1].text : undefined;
+  const live = streaming && answerIdx === messages.length - 1;
+
+  const onReady = () => {
+    window.setTimeout(() => {
+      play("wave");
+      setGreeting(GREETING);
+    }, 700);
   };
 
-  useEffect(() => () => {
-    clearTimers();
-    abortRef.current?.abort();
-  }, []);
-
-  const askAgent = async (text: string, excited = false) => {
-    clearTimers();
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    setResponse("");
-    setIsStreaming(true);
-    setState(excited ? "excited" : "thinking");
-
-    // Brief excited beat before transitioning to thinking, just like the old
-    // demo cycle. Tokens start arriving almost immediately so we drop straight
-    // to "answering" on first delta.
-    if (excited) {
-      responseTimer.current = window.setTimeout(
-        () => setState("thinking"),
-        700,
-      );
+  const onPoke = () => {
+    if (streaming) return;
+    const now = stamp();
+    pokes.current = [...pokes.current.filter((t) => now - t < 3500), now];
+    const rect = stageRef.current?.getBoundingClientRect();
+    const x = rect ? lastPointer.current.x - rect.left : 0;
+    const y = rect ? lastPointer.current.y - rect.top : 0;
+    if (pokes.current.length >= 5) {
+      pokes.current = [];
+      play("dance");
+      setGreeting(BOX_LINE);
+      return;
     }
-
-    let firstDelta = true;
-    await streamChat(
-      text,
-      {
-        onDelta: (delta) => {
-          if (firstDelta) {
-            firstDelta = false;
-            setState("answering");
-          }
-          setResponse((r) => r + delta);
-        },
-        onDone: () => {
-          setIsStreaming(false);
-          idleTimer.current = window.setTimeout(() => setState("idle"), 1500);
-        },
-        onError: (msg) => {
-          setResponse(msg);
-          setIsStreaming(false);
-          setState("confused");
-          idleTimer.current = window.setTimeout(() => setState("idle"), 2000);
-        },
-      },
-      controller.signal,
-    );
+    play("poke");
+    const id = now;
+    setBursts((b) => [...b, { id, text: pickOne(POKE_LINES), x, y }]);
+    window.setTimeout(() => setBursts((b) => b.filter((item) => item.id !== id)), 950);
   };
 
   return (
-    <section className="relative flex min-h-screen flex-col overflow-hidden">
-      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between border-b border-line bg-bg/60 px-5 py-5 backdrop-blur sm:px-10 sm:py-6">
-        <div className="font-display text-[16px] font-extrabold tracking-[0.18em] sm:text-[18px]">HAMMOUDEH</div>
-        <nav className="flex gap-4 text-[10px] uppercase tracking-widest text-ink-mute sm:gap-7 sm:text-[12px]">
-          <a href="#cv" className="transition hover:text-ink">CV</a>
-          <a href="#thought-process" className="transition hover:text-ink">RAG</a>
-          <a href="#contact" className="transition hover:text-ink">Contact</a>
-        </nav>
-      </header>
+    <section id="top" className="relative flex min-h-[100svh] flex-col overflow-hidden">
+      <Header onJobMatch={() => setJobOpen(true)} onChat={() => setDockOpen(true)} />
+      <JobMatch open={jobOpen} onClose={() => setJobOpen(false)} />
+      <HeroBackdrop />
 
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[12%] top-[18%] h-[6px] w-[60%] rotate-[-4deg] rounded-full bg-sand opacity-30 blur-[40px]" />
-        <div className="absolute left-[32%] top-[58%] h-[4px] w-[55%] rotate-[3deg] rounded-full bg-cool opacity-25 blur-[50px]" />
-        <div className="absolute left-[8%] top-[78%] h-[5px] w-[70%] rotate-[-2deg] rounded-full bg-sand opacity-20 blur-[55px]" />
-      </div>
+      <div className="relative z-10 mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-2 px-5 pb-14 pt-20 sm:px-8 lg:grid-cols-[1fr_0.95fr] lg:gap-6 lg:px-10 lg:pt-20">
+        {/* Avatar stage: first on mobile, right column on desktop. */}
+        <div
+          ref={stageRef}
+          className="relative order-1 h-[54svh] min-h-[380px] lg:order-2 lg:h-[86svh]"
+          onPointerDownCapture={(e) => (lastPointer.current = { x: e.clientX, y: e.clientY })}
+        >
+          {/* Mobile: the campus sits right behind him, walkway under his feet. */}
+          <div className="pointer-events-none absolute -left-5 -right-5 -top-20 bottom-0 overflow-hidden sm:-left-8 sm:-right-8 lg:hidden" aria-hidden>
+            <img src="/bg/auc-hero-sm.webp" alt="" className="h-full w-full object-cover object-[64%_88%]" />
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-bg" />
+          </div>
 
-      {/* Robot lives in its own absolute layer behind the hero content. */}
-      <Agent
-        state={state}
-        className="absolute inset-x-0 top-0 z-0 h-[68vh] pointer-events-none"
-      />
-
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-end px-6 pt-24 pb-16">
-        <h1 className="text-center font-display text-[64px] sm:text-[84px] font-semibold leading-[0.95] tracking-tight">
-          Ask <em className="font-normal italic text-sand">Hammoudeh.</em>
-        </h1>
-        <p className="mt-4 max-w-[520px] text-center text-[15px] leading-relaxed text-ink-mute">
-          An agent trained on Mohammad's work — the projects, the decisions, the tradeoffs. He'll tell you what you want to know.
-        </p>
-
-        <div className="mt-7 flex min-h-[292px] w-full flex-col items-center gap-3">
-          <ChatBox
-            chips={CHIPS}
-            onTypingChange={(typing) => {
-              if (isStreaming) return;
-              if (typing) {
-                clearTimers();
-                setState("typing");
-              } else if (state === "typing") {
-                setState("idle");
-              }
-            }}
-            onSubmit={(text) => askAgent(text, false)}
-            onChipClick={(text) => askAgent(text, true)}
+          {/* Canvas bleeds past the stage so wide or raised gestures never hit an edge. */}
+          <Avatar
+            state={avatarState}
+            oneShot={oneShot}
+            lookAtCursor
+            onPoke={onPoke}
+            onReady={onReady}
+            framing="hero"
+            className="absolute -top-[18%] bottom-0 -left-5 -right-5 sm:-left-8 sm:-right-8 lg:-left-[30%] lg:-right-[30%]"
           />
 
-          <div className="grid w-full max-w-[720px] grid-cols-2 gap-1.5 opacity-90 sm:grid-cols-4">
+          {bursts.map((b) => (
+            <span
+              key={b.id}
+              className="pointer-events-none absolute z-30 animate-rise whitespace-nowrap rounded-lg bg-ink px-3 py-1 font-display text-[14px] font-bold text-pop"
+              style={{ left: b.x, top: b.y - 20, transform: "translateX(-50%)" }}
+            >
+              {b.text}
+            </span>
+          ))}
+
+        </div>
+
+        {/* Copy + chat */}
+        <div className="relative z-20 order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left">
+          <h1 className="font-display text-[42px] font-extrabold leading-[0.92] tracking-[-0.03em] text-ink sm:text-[72px] lg:text-[84px]">
+            Ask <span className="text-sand">Yahya</span>
+            <span className="text-ink">.</span>
+          </h1>
+          <p className="mt-4 max-w-[500px] text-[16px] leading-relaxed text-ink-mute">
+            A 3D version of me, wired to an agent that knows my projects, decisions and tradeoffs.
+            It answers from my actual work, remembers the conversation, and shows its sources.
+          </p>
+
+          <div className="mt-6 w-full max-w-[600px]">
+            <ChatBox
+              chips={CHIPS}
+              onTypingChange={setTyping}
+              onSubmit={(text) => ask(text)}
+              onChipClick={(text) => ask(text, { excited: true })}
+            />
+          </div>
+
+          <div
+            className={`w-full max-w-[600px] overflow-hidden transition-all duration-300 ${
+              answer || greeting ? "mt-4 max-h-[520px] opacity-100" : "mt-0 max-h-0 opacity-0"
+            }`}
+          >
+            <div className="rounded-2xl border-[1.5px] border-line bg-bg-2 p-4 text-left">
+              <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-ink-mute">
+                <img src="/avatar-face.webp" alt="" className="h-6 w-6 shrink-0 rounded-full border border-line object-cover" />
+                {question ? <span className="truncate">“{question}”</span> : "Yahya"}
+                {answer && (
+                  <button onClick={() => setDockOpen(true)} className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-lg border-[1.5px] border-line px-2.5 py-1 text-[13px] font-semibold text-ink-mute transition-colors hover:border-sand hover:text-sand">
+                    open chat <ArrowUpRight className="ml-0.5 inline h-3 w-3" />
+                  </button>
+                )}
+              </div>
+              {answer ? (
+                <AnswerCard answer={answer} question={question} live={live} />
+              ) : (
+                <p className="text-[15px] leading-relaxed text-ink">{greeting}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-5 grid w-full max-w-[600px] grid-cols-2 gap-2 sm:grid-cols-4">
             {CV_HOOKS.map((hook) => (
               <button
                 key={hook.label}
-                onClick={() => askAgent(hook.question, true)}
-                className="group rounded-lg border border-line bg-bg-2/35 px-3 py-1.5 text-left backdrop-blur transition hover:border-sand hover:bg-sand/[0.06]"
+                onClick={() => ask(hook.question, { excited: true })}
+                className="group rounded-2xl border-[1.5px] border-line bg-bg-2 px-3.5 py-2.5 text-left transition-colors hover:border-sand"
               >
-                <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-sand">
-                  {hook.label}
-                </div>
-                <div className="mt-1 text-[11.5px] leading-4 text-ink-mute transition group-hover:text-ink">
-                  {hook.detail}
-                </div>
+                <div className="font-display text-[14px] font-bold text-ink group-hover:text-sand">{hook.label}</div>
+                <div className="mt-0.5 text-[13px] leading-4 text-ink-mute">{hook.detail}</div>
               </button>
             ))}
           </div>
 
-          <div
-            className={`w-full max-w-[640px] rounded-2xl border border-line bg-bg-2/70 p-5 backdrop-blur transition-opacity ${
-              response || isStreaming ? "opacity-100" : "pointer-events-none opacity-0"
-            }`}
+          <button
+            onClick={() => setJobOpen(true)}
+            className="btn-ledge mt-4 flex items-center gap-3 rounded-2xl bg-sand px-4 py-3 text-left"
           >
-              <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-sand">
-                Hammoudeh
-              </div>
-              <p className="max-h-[136px] overflow-y-auto whitespace-pre-wrap pr-2 text-[15px] leading-relaxed text-ink">
-                {response || "Thinking..."}
-                {isStreaming && (
-                  <span className="ml-1 inline-block h-[14px] w-[2px] animate-pulse bg-sand align-middle" />
-                )}
-              </p>
-            </div>
+            <Target className="h-6 w-6 shrink-0 text-pop" />
+            <span>
+              <span className="block font-display text-[15px] font-bold text-pop">Hiring? Run a job match.</span>
+              <span className="block text-[13.5px] text-white/80">Paste a JD, get an honest fit score with proof and gaps.</span>
+            </span>
+          </button>
         </div>
-
-        <a
-          href="#thought-process"
-          className="absolute bottom-5 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-faint transition hover:text-sand"
-        >
-          See how he works ↓
-        </a>
       </div>
     </section>
+  );
+}
+
+/** Desktop: AUC campus painting across the hero, drifting a few px with the cursor. */
+function HeroBackdrop() {
+  const layer = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = layer.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    const onMove = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth - 0.5) * -14;
+        const y = (e.clientY / window.innerHeight - 0.5) * -8;
+        el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.05)`;
+      });
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div className="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block" aria-hidden>
+      <div ref={layer} className="absolute -inset-4 transition-transform duration-300 ease-out" style={{ transform: "scale(1.05)" }}>
+        <img src="/bg/auc-hero.webp" alt="" className="h-full w-full object-cover object-[45%_62%]" />
+      </div>
+      <div className="absolute inset-y-0 left-0 w-[62%] bg-gradient-to-r from-bg/95 via-bg/80 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-bg" />
+    </div>
+  );
+}
+
+function Header({ onJobMatch, onChat }: { onJobMatch: () => void; onChat: () => void }) {
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b-[1.5px] border-line bg-bg-2/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-3.5 sm:px-8 lg:px-10">
+        <a href="#top" className="group flex items-center gap-2.5">
+          <img src="/avatar-face.webp" alt="" className="h-9 w-9 rounded-xl border-[1.5px] border-line bg-bg-3 object-cover" />
+          <span className="font-display text-[18px] font-extrabold tracking-tight text-ink">Yahya Hammoudeh</span>
+        </a>
+        <nav className="flex items-center gap-4 text-[13px] font-semibold text-ink-mute sm:gap-6">
+          <a href="#cv" className="hidden transition hover:text-ink sm:inline">Work</a>
+          <button onClick={onJobMatch} className="hidden transition hover:text-ink md:inline">Job match</button>
+          <a href="#contact" className="hidden transition hover:text-ink sm:inline">Contact</a>
+          <button onClick={onChat} className="btn-ledge inline-flex items-center gap-1.5 rounded-xl bg-sand px-4 py-2 text-pop">
+            Chat
+          </button>
+        </nav>
+      </div>
+    </header>
   );
 }
