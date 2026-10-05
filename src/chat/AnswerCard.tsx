@@ -40,10 +40,10 @@ export function AnswerCard({ answer, question, live, compact = false }: Props) {
   };
 
   return (
-    <div>
+    <div className="flex min-h-0 flex-col">
       <p
         className={`whitespace-pre-wrap leading-relaxed ${answer.error ? "text-sand" : "text-ink"} ${
-          compact ? "text-[15px]" : "max-h-[260px] overflow-y-auto pr-1 text-[16px]"
+          compact ? "text-[15px]" : "min-h-0 max-h-[260px] overflow-y-auto pr-1 text-[16px]"
         }`}
       >
         {body || <ThinkingDots />}
@@ -53,7 +53,7 @@ export function AnswerCard({ answer, question, live, compact = false }: Props) {
       {!live && !answer.error && body && (
         <>
           {followUps.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <div className="mt-3 flex shrink-0 flex-wrap gap-1.5">
               {followUps.map((q) => (
                 <button
                   key={q}
@@ -65,7 +65,7 @@ export function AnswerCard({ answer, question, live, compact = false }: Props) {
               ))}
             </div>
           )}
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-line pt-2.5">
+          <div className="mt-3 flex shrink-0 flex-wrap items-center gap-1.5 border-t border-line pt-2.5">
             {(answer.sources ?? []).map((src) => (
               <button
                 key={src}

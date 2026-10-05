@@ -77,12 +77,12 @@ export function Hero() {
   };
 
   return (
-    <section id="top" className="relative flex min-h-[100svh] flex-col overflow-hidden">
+    <section id="top" className="relative flex min-h-[100svh] flex-col overflow-hidden lg:h-[100svh] lg:min-h-[720px]">
       <Header onJobMatch={() => setJobOpen(true)} onChat={() => setDockOpen(true)} />
       <JobMatch open={jobOpen} onClose={() => setJobOpen(false)} />
       <HeroBackdrop />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-2 px-5 pb-14 pt-20 sm:px-8 lg:grid-cols-[1fr_0.95fr] lg:gap-6 lg:px-10 lg:pt-20">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center lg:min-h-0 lg:grid-rows-[minmax(0,1fr)] gap-2 px-5 pb-14 pt-20 sm:px-8 lg:grid-cols-[1fr_0.95fr] lg:gap-6 lg:px-10 lg:pt-20">
         {/* Avatar stage: first on mobile, right column on desktop. */}
         <div
           ref={stageRef}
@@ -118,20 +118,21 @@ export function Hero() {
 
         </div>
 
-        {/* Copy + chat */}
-        <div className="relative z-20 order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left">
+        {/* Copy + chat. On desktop the hero is locked to the viewport and the answer card
+            absorbs leftover height, so a long answer never resizes the stage or backdrop. */}
+        <div className="relative z-20 order-2 flex flex-col items-center text-center lg:order-1 lg:h-full lg:min-h-0 lg:items-start lg:justify-center lg:text-left">
           <h1 className="font-display text-[42px] font-extrabold leading-[0.92] tracking-[-0.03em] text-ink sm:text-[72px] lg:text-[84px]">
             Ask <span className="text-sand">Yahya</span>
             <span className="text-ink">.</span>
           </h1>
-          <p className="mt-4 max-w-[500px] text-[16px] leading-relaxed text-ink-mute">
+          <p className={`mt-4 max-w-[500px] text-[16px] leading-relaxed text-ink-mute ${answer ? "lg:hidden" : ""}`}>
             A 3D version of me, wired to an agent that knows my projects, decisions and tradeoffs.
             It answers from my actual work, remembers the conversation, and shows its sources.
           </p>
 
           <div className="mt-6 w-full max-w-[600px]">
             <ChatBox
-              chips={CHIPS}
+              chips={answer ? [] : CHIPS}
               onTypingChange={setTyping}
               onSubmit={(text) => ask(text)}
               onChipClick={(text) => ask(text, { excited: true })}
@@ -139,12 +140,12 @@ export function Hero() {
           </div>
 
           <div
-            className={`w-full max-w-[600px] overflow-hidden transition-all duration-300 ${
+            className={`flex min-h-0 w-full max-w-[600px] flex-col overflow-hidden transition-all duration-300 ${
               answer || greeting ? "mt-4 max-h-[520px] opacity-100" : "mt-0 max-h-0 opacity-0"
             }`}
           >
-            <div className="rounded-2xl border-[1.5px] border-line bg-bg-2 p-4 text-left">
-              <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold text-ink-mute">
+            <div className="flex min-h-0 flex-col rounded-2xl border-[1.5px] border-line bg-bg-2 p-4 text-left">
+              <div className="mb-2 flex shrink-0 items-center gap-2 text-[12px] font-semibold text-ink-mute">
                 <img src="/avatar-face.webp" alt="" className="h-6 w-6 shrink-0 rounded-full border border-line object-cover" />
                 {question ? <span className="truncate">“{question}”</span> : "Yahya"}
                 {answer && (
@@ -176,7 +177,7 @@ export function Hero() {
 
           <button
             onClick={() => setJobOpen(true)}
-            className="btn-ledge mt-4 flex items-center gap-3 rounded-2xl bg-sand px-4 py-3 text-left"
+            className={`btn-ledge mt-4 flex items-center gap-3 rounded-2xl bg-sand px-4 py-3 text-left ${answer ? "lg:hidden" : ""}`}
           >
             <Target className="h-6 w-6 shrink-0 text-pop" />
             <span>
